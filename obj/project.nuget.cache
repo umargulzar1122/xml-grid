@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "Mn6lp21sdpiFnVlChKqldpKRC2IYcPnLqdOgcw2OxYuaW+xLn15nhNDGNojsS/ALfPkGjcBLBFRaN8EurpSmtw==",
+  "success": true,
+  "projectFilePath": "C:\\_Workspace\\personal\\xml-grid-github\\XMLGrid.pcfproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\UmarGulzar\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.0\\microsoft.netframework.referenceassemblies.1.0.0.nupkg.sha512",
+    "C:\\Users\\UmarGulzar\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net462\\1.0.0\\microsoft.netframework.referenceassemblies.net462.1.0.0.nupkg.sha512",
+    "C:\\Users\\UmarGulzar\\.nuget\\packages\\microsoft.powerapps.msbuild.pcf\\1.45.2\\microsoft.powerapps.msbuild.pcf.1.45.2.nupkg.sha512"
+  ],
+  "logs": []
+}

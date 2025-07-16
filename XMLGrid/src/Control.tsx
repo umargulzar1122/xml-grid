@@ -17,6 +17,7 @@ const Control = ({ context, selectedRows }: ControlProps) => {
 				setIsloading(true);
 				const jsonObject = convertXML(context.parameters.fetchXML.raw!);
 				const data = await getTableHeaders(jsonObject) as JSONObject;
+				debugger
 				setIsloading(false);
 				_primaryKey = data._entityAttributes.find((s: any) => s.isPrimary === true).key;
 				if (!context.parameters.recordIds.raw) {

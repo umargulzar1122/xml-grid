@@ -1,0 +1,2 @@
+C:\_Workspace\personal\xml-grid-github\obj\Release\XMLGrid.pcfproj.AssemblyReference.cache
+C:\_Workspace\personal\xml-grid-github\obj\Release\XMLGrid.pcfproj.CoreCompileInputs.cache

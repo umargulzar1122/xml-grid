@@ -10,24 +10,11 @@ export const getBuildConfiguration = (): BuildConfiguration => {
 	return BuildConfiguration.release;
 }
 
-const getAccessToken = () => {
-	return new Promise((resolve, reject) => {
-		(async () => {
-			const res = await axios.get('https://prod-35.westeurope.logic.azure.com:443/workflows/c3d67a67a35f4a33aa0fe5865e207f64/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=5SA0R69rNmgHFmlI93lXD_i12VDE02Lhe5V5NQlEu9E')
-			return resolve(res.data.access_token)
-		})()
-	})
-}
-
 export const getEntityAttribute = (logicalName: string) => {
 	return new Promise((resolve, reject) => {
 		(async () => {
 			try {
 				const headers = {} as any;
-				if (getBuildConfiguration() === BuildConfiguration.debug) {
-					const accessToken = await getAccessToken();
-					headers["Authorization"] = `Bearer ${accessToken}`;
-				}
 				const result = ((await axios.get(`${_baseUrl}/api/data/v9.2/EntityDefinitions(LogicalName='${logicalName}')/Attributes`, { headers: headers })).data).value;
 				resolve((result));
 			} catch (error) {
@@ -37,12 +24,13 @@ export const getEntityAttribute = (logicalName: string) => {
 		})()
 	})
 }
-
+let order = 0;
 const extractAttributes = (entity: any, tableHeaders: Array<JSONObject>, linkEntity: boolean = false) => {
 	const attributes = entity.children;
 	attributes.forEach((att: JSONObject) => {
+		order = order + 1;
 		if (att.attribute) {
-			tableHeaders.push({ ...att.attribute, linkEntity, entity: entity.name ?? "", alias: entity.alias })
+			tableHeaders.push({ ...att.attribute, linkEntity, entity: entity.name ?? "", alias: entity.alias, order })
 		}
 		if (att["link-entity"]) {
 			extractAttributes(att["link-entity"], tableHeaders, true)
@@ -105,11 +93,16 @@ export const getTableHeaders = (json: JSONObject) => {
 							SchemaName: _att.SchemaName,
 							alias: isFound.alias,
 							linkEntity: isFound.linkEntity,
+							order: isFound.order
 						}
 					)
 				}
 			})
-			resolve({ _entityAttributes, _entity })
+			resolve({
+				_entityAttributes: _entityAttributes.sort(function (a, b) {
+					return a.order - b.order;
+				}), _entity
+			})
 		})()
 	})
 }
@@ -119,11 +112,7 @@ export const getEntityMetaData = (entity: string) => {
 		(async () => {
 			try {
 				const headers = {} as any;
-				if (getBuildConfiguration() === BuildConfiguration.debug) {
-					const accessToken = await getAccessToken();
-					headers["Authorization"] = `Bearer ${accessToken}`;
-				}
-				const entities = ((await axios.get(`https://org75277f5b.crm4.dynamics.com/api/data/v9.1/EntityDefinitions?$select=LogicalName,DisplayName,EntitySetName,LogicalCollectionName&$filter=LogicalName eq '${entity}'`, {
+				const entities = ((await axios.get(`${_baseUrl}/api/data/v9.1/EntityDefinitions?$select=LogicalName,DisplayName,EntitySetName,LogicalCollectionName&$filter=LogicalName eq '${entity}'`, {
 					headers: {
 						...headers
 					}
@@ -155,12 +144,8 @@ export const getData = (fetchXML: string, entity: string) => {
 					"Accept": "application/json",
 					"Prefer": "odata.include-annotations=*"
 				} as JSONObject;
-				if (getBuildConfiguration() === BuildConfiguration.debug) {
-					const accessToken = await getAccessToken();
-					headers["Authorization"] = `Bearer ${accessToken}`;
-				}
 				const encodedFetchXML = encodeURIComponent(fetchXML);
-				const data = ((await axios.get(`https://org75277f5b.crm4.dynamics.com/api/data/v9.1/${entity}?fetchXml=${encodedFetchXML}`, {
+				const data = ((await axios.get(`${_baseUrl}/api/data/v9.1/${entity}?fetchXml=${encodedFetchXML}`, {
 					headers: {
 						...headers
 					}
